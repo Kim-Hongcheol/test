@@ -32,6 +32,10 @@ class Communication:
     def __del__(self):
         self.disconnect()
 
+    def send_value(self, address, value):
+        self.client.write_register(address=address,
+                                   value=value, slave=self.slaveID)
+        
     def connect(self, ip, port, slaveID=1):
         '''
         Connect to Delto Gripper
@@ -60,7 +64,15 @@ class Communication:
 
         # self.client.close()
 
-    def get_position(self):
+    def get_position(self)-> list:
+        """
+        Retrieve the current position of the motors.
+        This method reads the current position of the motors from the Modbus TCP client.
+        If the instance is in dummy mode, it returns a list of zeros and logs the action.
+        Returns:
+            list: A list containing the current positions of the motors. Each position is
+                adjusted to account for potential negative values and scaled by a factor of 10.
+        """
 
         if self.dummy:
             status = [0]*12
@@ -77,18 +89,21 @@ class Communication:
             slave=self.slaveID).registers
                 
         for i in range(Delto3F.MOTOR_NUM.value):
-            # stats = self.client.read_input_registers(
-            #     address=Delto3FInputRegisters.MOTOR1_CURRENT_POSITION.value + i,
-            #     count=1,
-            #     slave=self.slaveID).registers
             status[i] = (status[i] if status[i] < 32768 else status[i] - 65536)/10.0
-            # unsigned 8bit to singed 8 bit
-            # stats = (stats[0] if stats[0] < 32768 else stats[0] - 65536)/10.0
-            # status.append(struct.unpack('h', struct.pack('H', stats[0]))[0]/10)
-            # status.append(stats)
+
         return status
 
     def get_high_force(self):
+        """
+
+        This method reads the input register corresponding to the high force value
+        from the Modbus TCP server using the provided client and slave ID. The
+        method is thread-safe, ensuring that the read operation is performed
+        within a locked context.
+
+        Returns:
+            int: The high force value read from the Modbus TCP server.
+        """
 
         with self.lock:
             high_force = self.client.read_input_registers(address=Delto3FInputRegisters.HIGH_FORCE.value,
@@ -127,7 +142,7 @@ class Communication:
             self.client.write_registers(
                 address=72, values=intPosion, slave=self.slaveID)
 
-    def get_pgain(self):
+    def get_pgain(self)-> list:
         if self.dummy:
             rclpy.Node.get_logger().info(rclpy.Node.get_name() +
                                          ": " +
@@ -146,7 +161,7 @@ class Communication:
         self.client.write_registers(address=Delto3FHoldingRegisters.MOTOR1_PGAIN.value,
                                     values=pGain, slave=self.slaveID)
 
-    def get_dgain(self):
+    def get_dgain(self)-> list:
         if self.dummy:
             rclpy.Node.get_logger().info(rclpy.Node.get_name() +
                                          ": " +
@@ -315,7 +330,7 @@ class Communication:
 change ip Example 
 
     comm = Communication()
-    comm.connect('169.254.186.72',10000)
+    comm.connect('169.254.186.72',502)
     comm.set_ip('169.254.186.73')
     comm.rom_write()
 
