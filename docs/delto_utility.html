@@ -203,13 +203,13 @@ placed in the <cite>tcp_data_send</cite> array. A CRC16 checksum is calculated a
 <dl class="py method">
 <dt class="sig sig-object py" id="delto_utility.delto_modbus_TCP.Communication.connect">
 <span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slaveID</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_utility/delto_modbus_TCP.html#Communication.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_utility.delto_modbus_TCP.Communication.connect" title="Link to this definition"></a></dt>
-<dd><p>Connect to Delto Gripper</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="delto_utility.delto_modbus_TCP.Communication.disconnect">
-<span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_utility/delto_modbus_TCP.html#Communication.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_utility.delto_modbus_TCP.Communication.disconnect" title="Link to this definition"></a></dt>
-<dd><p>Disconnect from Delto Gripper</p>
+<dd><p>Connect to Delto Gripper.</p>
+<p>Parameters:
+ip (str): The IP address of the Delto Gripper.
+port (int): The port number to connect to.
+slaveID (int, optional): The slave ID for the Modbus connection. Defaults to 1.</p>
+<p>Returns:
+bool: True if the connection is successful, False otherwise.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -222,40 +222,60 @@ accessible from firmware version 1.5 or higher
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="delto_utility.delto_modbus_TCP.Communication.get_high_force">
-<span class="sig-name descname"><span class="pre">get_high_force</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_utility/delto_modbus_TCP.html#Communication.get_high_force"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_utility.delto_modbus_TCP.Communication.get_high_force" title="Link to this definition"></a></dt>
-<dd><p>This method reads the input register corresponding to the high force value
-from the Modbus TCP server using the provided client and slave ID. The
-method is thread-safe, ensuring that the read operation is performed
-within a locked context.</p>
+<dt class="sig sig-object py" id="delto_utility.delto_modbus_TCP.Communication.get_position">
+<span class="sig-name descname"><span class="pre">get_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/delto_utility/delto_modbus_TCP.html#Communication.get_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_utility.delto_modbus_TCP.Communication.get_position" title="Link to this definition"></a></dt>
+<dd><p>Retrieve the current position of the motors.
+If the instance is in dummy mode, it returns a list of zeros and logs the function call.
+Otherwise, it reads the input registers from the Modbus client to get the current position
+of the motors, adjusts the values if necessary, and returns the positions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The high force value read from the Modbus TCP server.</p>
+<dd class="field-odd"><p><dl class="simple">
+<dt>A list of motor positions. Each position is adjusted to account for potential</dt><dd><p>overflow and scaled appropriately.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>int</p>
+<dd class="field-even"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="delto_utility.delto_modbus_TCP.Communication.get_position">
-<span class="sig-name descname"><span class="pre">get_position</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/delto_utility/delto_modbus_TCP.html#Communication.get_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_utility.delto_modbus_TCP.Communication.get_position" title="Link to this definition"></a></dt>
-<dd><p>Retrieve the current position of the motors.
-This method reads the current position of the motors from the Modbus TCP client.
-If the instance is in dummy mode, it returns a list of zeros and logs the action.
-:returns:</p>
+<dt class="sig sig-object py" id="delto_utility.delto_modbus_TCP.Communication.set_position">
+<span class="sig-name descname"><span class="pre">set_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_utility/delto_modbus_TCP.html#Communication.set_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_utility.delto_modbus_TCP.Communication.set_position" title="Link to this definition"></a></dt>
+<dd><p>Sets the position of the device.
+This method sets the position of the device by writing the provided
+position values to the modbus registers. The position should be a list
+of 12 float values. If the dummy flag is set, it logs the function call
+and returns without setting the position.
+:param position: A list of 12 float values representing the</p>
 <blockquote>
-<div><dl class="simple">
-<dt>A list containing the current positions of the motors. Each position is</dt><dd><p>adjusted to account for potential negative values and scaled by a factor of 10.</p>
-</dd>
-</dl>
+<div><p>desired position.</p>
 </div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The position values are scaled by a factor of 10 and converted to
+unsigned 16-bit integers before being written to the modbus registers.</p></li>
+<li><p>The method acquires a lock before writing to ensure thread safety.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="delto_utility.delto_modbus_TCP.Communication.write_register">
+<span class="sig-name descname"><span class="pre">write_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/delto_utility/delto_modbus_TCP.html#Communication.write_register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#delto_utility.delto_modbus_TCP.Communication.write_register" title="Link to this definition"></a></dt>
+<dd><p>Write a value to a specific register.</p>
+<p>Parameters:
+address (int): The address of the register to write to.
+value (int): The value to write to the register.</p>
+<p>Returns:
+None</p>
 </dd></dl>
 
 </dd></dl>

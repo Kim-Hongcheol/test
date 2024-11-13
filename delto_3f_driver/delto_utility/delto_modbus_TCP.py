@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 '''
 default values
 IP = '169.254.186.72'
-PORT = 10000
+PORT = 502
 SUBNET_MASK = '255.255.255.0'
 DEFAULT_GATEWAY = '192.168.1.1'
 '''
@@ -26,20 +26,38 @@ class Communication:
     def __init__(self, dummy=False):
         self.client = None
         self.slaveID = 0
-        self.dummy = dummy 
+        self.dummy = dummy
         self.lock = threading.Lock()
 
     def __del__(self):
         self.disconnect()
 
-    def send_value(self, address, value):
+    def write_register(self, address, value):
+        """
+        Write a value to a specific register.
+
+        Parameters:
+        address (int): The address of the register to write to.
+        value (int): The value to write to the register.
+
+        Returns:
+        None
+        """
         self.client.write_register(address=address,
                                    value=value, slave=self.slaveID)
-        
+
     def connect(self, ip, port, slaveID=1):
-        '''
-        Connect to Delto Gripper
-        '''
+        """
+        Connect to Delto Gripper.
+
+        Parameters:
+        ip (str): The IP address of the Delto Gripper.
+        port (int): The port number to connect to.
+        slaveID (int, optional): The slave ID for the Modbus connection. Defaults to 1.
+
+        Returns:
+        bool: True if the connection is successful, False otherwise.
+        """
 
         self.slaveID = slaveID
         if self.dummy:
@@ -53,9 +71,7 @@ class Communication:
         return self.client.connect()
 
     def disconnect(self):
-        '''
-        Disconnect from Delto Gripper
-        '''
+
         if self.dummy:
             rclpy.Node.get_logger().info(rclpy.Node.get_name() +
                                          ": " +
@@ -64,14 +80,18 @@ class Communication:
 
         # self.client.close()
 
-    def get_position(self)-> list:
+    def get_position(self) -> list:
         """
+
         Retrieve the current position of the motors.
-        This method reads the current position of the motors from the Modbus TCP client.
-        If the instance is in dummy mode, it returns a list of zeros and logs the action.
+        If the instance is in dummy mode, it returns a list of zeros and logs the function call.
+        Otherwise, it reads the input registers from the Modbus client to get the current position
+        of the motors, adjusts the values if necessary, and returns the positions.
+
         Returns:
-            list: A list containing the current positions of the motors. Each position is
-                adjusted to account for potential negative values and scaled by a factor of 10.
+            list: A list of motor positions. Each position is adjusted to account for potential
+                overflow and scaled appropriately.
+
         """
 
         if self.dummy:
@@ -79,31 +99,20 @@ class Communication:
             rclpy.Node.get_logger().info(rclpy.Node.get_name() +
                                          ": " +
                                          sys._getframe().f_code.co_name)
-
             return status
 
-        #status = []
         status = self.client.read_input_registers(
             address=Delto3FInputRegisters.MOTOR1_CURRENT_POSITION.value,
             count=Delto3F.MOTOR_NUM.value,
             slave=self.slaveID).registers
-                
+
         for i in range(Delto3F.MOTOR_NUM.value):
-            status[i] = (status[i] if status[i] < 32768 else status[i] - 65536)/10.0
+            status[i] = (status[i] if status[i] <
+                         32768 else status[i] - 65536)/10.0
 
         return status
 
     def get_high_force(self):
-        """
-
-        This method reads the input register corresponding to the high force value
-        from the Modbus TCP server using the provided client and slave ID. The
-        method is thread-safe, ensuring that the read operation is performed
-        within a locked context.
-
-        Returns:
-            int: The high force value read from the Modbus TCP server.
-        """
 
         with self.lock:
             high_force = self.client.read_input_registers(address=Delto3FInputRegisters.HIGH_FORCE.value,
@@ -120,6 +129,27 @@ class Communication:
         return low_force[0]
 
     def set_position(self, position: list[float]):
+        """
+
+        Sets the position of the device.
+        This method sets the position of the device by writing the provided
+        position values to the modbus registers. The position should be a list
+        of 12 float values. If the dummy flag is set, it logs the function call
+        and returns without setting the position.
+
+        Args:
+            position (list[float]): A list of 12 float values representing the
+                                    desired position.
+
+        Returns:
+            None
+
+        Notes:
+            - The position values are scaled by a factor of 10 and converted to
+              unsigned 16-bit integers before being written to the modbus registers.
+            - The method acquires a lock before writing to ensure thread safety.
+
+        """
 
         if (self.dummy):
             rclpy.Node.get_logger().info(rclpy.Node.get_name() +
@@ -142,7 +172,7 @@ class Communication:
             self.client.write_registers(
                 address=72, values=intPosion, slave=self.slaveID)
 
-    def get_pgain(self)-> list:
+    def get_pgain(self):
         if self.dummy:
             rclpy.Node.get_logger().info(rclpy.Node.get_name() +
                                          ": " +
@@ -161,7 +191,7 @@ class Communication:
         self.client.write_registers(address=Delto3FHoldingRegisters.MOTOR1_PGAIN.value,
                                     values=pGain, slave=self.slaveID)
 
-    def get_dgain(self)-> list:
+    def get_dgain(self):
         if self.dummy:
             rclpy.Node.get_logger().info(rclpy.Node.get_name() +
                                          ": " +
@@ -327,13 +357,11 @@ class Communication:
 
 
 '''
-change ip Example 
-
+change ip Example
     comm = Communication()
     comm.connect('169.254.186.72',502)
     comm.set_ip('169.254.186.73')
     comm.rom_write()
-
     The changed IP is applied only after restarting the power.
 
 '''

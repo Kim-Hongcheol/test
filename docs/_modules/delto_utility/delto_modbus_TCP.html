@@ -83,7 +83,7 @@
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">default values</span>
 <span class="sd">IP = &#39;169.254.186.72&#39;</span>
-<span class="sd">PORT = 10000</span>
+<span class="sd">PORT = 502</span>
 <span class="sd">SUBNET_MASK = &#39;255.255.255.0&#39;</span>
 <span class="sd">DEFAULT_GATEWAY = &#39;192.168.1.1&#39;</span>
 <span class="sd">&#39;&#39;&#39;</span>
@@ -105,16 +105,37 @@
     <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">send_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Communication.write_register">
+<a class="viewcode-back" href="../../delto_utility.html#delto_utility.delto_modbus_TCP.Communication.write_register">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write a value to a specific register.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        address (int): The address of the register to write to.</span>
+<span class="sd">        value (int): The value to write to the register.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">write_register</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span>
-                                   <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slaveID</span><span class="p">)</span>
+                                   <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slaveID</span><span class="p">)</span></div>
+
         
 <div class="viewcode-block" id="Communication.connect">
 <a class="viewcode-back" href="../../delto_utility.html#delto_utility.delto_modbus_TCP.Communication.connect">[docs]</a>
     <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">slaveID</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Connect to Delto Gripper</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connect to Delto Gripper.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        ip (str): The IP address of the Delto Gripper.</span>
+<span class="sd">        port (int): The port number to connect to.</span>
+<span class="sd">        slaveID (int, optional): The slave ID for the Modbus connection. Defaults to 1.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        bool: True if the connection is successful, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">slaveID</span> <span class="o">=</span> <span class="n">slaveID</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy</span><span class="p">:</span>
@@ -128,18 +149,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Communication.disconnect">
-<a class="viewcode-back" href="../../delto_utility.html#delto_utility.delto_modbus_TCP.Communication.disconnect">[docs]</a>
     <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Disconnect from Delto Gripper</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy</span><span class="p">:</span>
             <span class="n">rclpy</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">rclpy</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span> <span class="o">+</span>
                                          <span class="s2">&quot;: &quot;</span> <span class="o">+</span>
                                          <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
-            <span class="k">return</span></div>
-
+            <span class="k">return</span>
 
         <span class="c1"># self.client.close()</span>
 
@@ -147,23 +163,25 @@
 <a class="viewcode-back" href="../../delto_utility.html#delto_utility.delto_modbus_TCP.Communication.get_position">[docs]</a>
     <span class="k">def</span> <span class="nf">get_position</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        </span>
 <span class="sd">        Retrieve the current position of the motors.</span>
-<span class="sd">        This method reads the current position of the motors from the Modbus TCP client.</span>
-<span class="sd">        If the instance is in dummy mode, it returns a list of zeros and logs the action.</span>
+<span class="sd">        If the instance is in dummy mode, it returns a list of zeros and logs the function call.</span>
+<span class="sd">        Otherwise, it reads the input registers from the Modbus client to get the current position</span>
+<span class="sd">        of the motors, adjusts the values if necessary, and returns the positions.</span>
+<span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            list: A list containing the current positions of the motors. Each position is</span>
-<span class="sd">                adjusted to account for potential negative values and scaled by a factor of 10.</span>
+<span class="sd">            list: A list of motor positions. Each position is adjusted to account for potential</span>
+<span class="sd">                overflow and scaled appropriately.</span>
+<span class="sd">                </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
+        
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy</span><span class="p">:</span>
             <span class="n">status</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">12</span>
             <span class="n">rclpy</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">rclpy</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span> <span class="o">+</span>
                                          <span class="s2">&quot;: &quot;</span> <span class="o">+</span>
                                          <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
-
             <span class="k">return</span> <span class="n">status</span>
 
-        <span class="c1">#status = []</span>
         <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">read_input_registers</span><span class="p">(</span>
             <span class="n">address</span><span class="o">=</span><span class="n">Delto3FInputRegisters</span><span class="o">.</span><span class="n">MOTOR1_CURRENT_POSITION</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="n">count</span><span class="o">=</span><span class="n">Delto3F</span><span class="o">.</span><span class="n">MOTOR_NUM</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -175,26 +193,13 @@
         <span class="k">return</span> <span class="n">status</span></div>
 
 
-<div class="viewcode-block" id="Communication.get_high_force">
-<a class="viewcode-back" href="../../delto_utility.html#delto_utility.delto_modbus_TCP.Communication.get_high_force">[docs]</a>
     <span class="k">def</span> <span class="nf">get_high_force</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">        This method reads the input register corresponding to the high force value</span>
-<span class="sd">        from the Modbus TCP server using the provided client and slave ID. The</span>
-<span class="sd">        method is thread-safe, ensuring that the read operation is performed</span>
-<span class="sd">        within a locked context.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            int: The high force value read from the Modbus TCP server.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
             <span class="n">high_force</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">read_input_registers</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="n">Delto3FInputRegisters</span><span class="o">.</span><span class="n">HIGH_FORCE</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                                                           <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                                           <span class="n">slave</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slaveID</span><span class="p">)</span><span class="o">.</span><span class="n">registers</span>
-        <span class="k">return</span> <span class="n">high_force</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
-
+        <span class="k">return</span> <span class="n">high_force</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">get_low_force</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -204,8 +209,28 @@
                                                          <span class="n">slave</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slaveID</span><span class="p">)</span><span class="o">.</span><span class="n">registers</span>
         <span class="k">return</span> <span class="n">low_force</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
+<div class="viewcode-block" id="Communication.set_position">
+<a class="viewcode-back" href="../../delto_utility.html#delto_utility.delto_modbus_TCP.Communication.set_position">[docs]</a>
     <span class="k">def</span> <span class="nf">set_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
-
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        </span>
+<span class="sd">        Sets the position of the device.</span>
+<span class="sd">        This method sets the position of the device by writing the provided</span>
+<span class="sd">        position values to the modbus registers. The position should be a list</span>
+<span class="sd">        of 12 float values. If the dummy flag is set, it logs the function call</span>
+<span class="sd">        and returns without setting the position.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            position (list[float]): A list of 12 float values representing the</span>
+<span class="sd">                                    desired position.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        Notes:</span>
+<span class="sd">            - The position values are scaled by a factor of 10 and converted to</span>
+<span class="sd">              unsigned 16-bit integers before being written to the modbus registers.</span>
+<span class="sd">            - The method acquires a lock before writing to ensure thread safety.</span>
+<span class="sd">            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy</span><span class="p">):</span>
             <span class="n">rclpy</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">rclpy</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span> <span class="o">+</span>
                                          <span class="s2">&quot;: &quot;</span> <span class="o">+</span>
@@ -225,9 +250,10 @@
             <span class="n">intPosion</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span>
                 <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">x</span><span class="o">*</span><span class="mi">10</span><span class="p">))))[</span><span class="mi">0</span><span class="p">],</span> <span class="n">position</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">write_registers</span><span class="p">(</span>
-                <span class="n">address</span><span class="o">=</span><span class="mi">72</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">intPosion</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slaveID</span><span class="p">)</span>
+                <span class="n">address</span><span class="o">=</span><span class="mi">72</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">intPosion</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slaveID</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_pgain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">get_pgain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy</span><span class="p">:</span>
             <span class="n">rclpy</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">rclpy</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span> <span class="o">+</span>
                                          <span class="s2">&quot;: &quot;</span> <span class="o">+</span>
@@ -246,7 +272,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">write_registers</span><span class="p">(</span><span class="n">address</span><span class="o">=</span><span class="n">Delto3FHoldingRegisters</span><span class="o">.</span><span class="n">MOTOR1_PGAIN</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
                                     <span class="n">values</span><span class="o">=</span><span class="n">pGain</span><span class="p">,</span> <span class="n">slave</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">slaveID</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_dgain</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_dgain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy</span><span class="p">:</span>
             <span class="n">rclpy</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">rclpy</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span> <span class="o">+</span>
                                          <span class="s2">&quot;: &quot;</span> <span class="o">+</span>
@@ -416,13 +442,11 @@
 
 
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">change ip Example </span>
-
+<span class="sd">change ip Example</span>
 <span class="sd">    comm = Communication()</span>
 <span class="sd">    comm.connect(&#39;169.254.186.72&#39;,502)</span>
 <span class="sd">    comm.set_ip(&#39;169.254.186.73&#39;)</span>
 <span class="sd">    comm.rom_write()</span>
-
 <span class="sd">    The changed IP is applied only after restarting the power.</span>
 
 <span class="sd">&#39;&#39;&#39;</span>
